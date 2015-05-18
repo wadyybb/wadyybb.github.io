@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Flot Examples: Multiple Axes</title>
+	<link href="css/examples.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.axislabels.js"></script>
+</head>
+<body>
+
+	<div id="header">
+		<h2>Multiple axes</h2>
+	</div>
+
+	<div id="content">
+
+		<div class="demo-container">
+			<div id="placeholder" class="demo-placeholder"></div>
+		</div>
+
+		<p>Multiple axis support showing the raw oil price in US $/barrel of crude oil vs. the exchange rate from US $ to €.</p>
+
+		<p>As illustrated, you can put in multiple axes if you need to. For each data series, simply specify the axis number. In the options, you can then configure where you want the extra axes to appear.</p>
+
+		<button id="test"> test button</button>
+		<input id="ttest" value="hehe" type="button"> 
+
+	</div>
+
+	<div id="footer">
+		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
+	</div>
+
+</body>
+
+
+	<script type="text/javascript">
+
+	$("#test").click(function(){
+
+		console.log("clicked");
+
+		// function euroFormatter(v, axis) {
+		// 	return v.toFixed(axis.tickDecimals) + "€";
+		// }
+
+		// function doPlot(position) {
+		// 	$.plot("#placeholder", [
+		// 		{ data: oilprices, label: "Oil price ($)" },
+		// 		{ data: exchangerates, label: "USD/EUR exchange rate", yaxis: 2 }
+		// 	], {
+		// 		xaxes: [ { mode: "time" } ],
+		// 		yaxes: [ { min: 0 }, {
+		// 			// align if we are to the right
+		// 			alignTicksWithAxis: position == "right" ? 1 : null,
+		// 			position: position,
+		// 			tickFormatter: euroFormatter
+		// 		} ],
+		// 		legend: { position: "sw" }
+		// 	});
+		// }
+
+		// doPlot("right");
+
+		// $("button").click(function () {
+		// 	doPlot($(this).text());
+		// });
+		var plotlmp=[];
+		var plotlme=[];
+		function onDataReceived(series) {
+
+                console.log(series[0]);
+
+                // plotdata = series; 
+
+                for(var i=3;i<6;i++){
+                	series[i].yaxis = 2;
+                }
+
+                var colors = ["#FFE100","#FFBF00","#FF9000", "#00E9FF","#00A9FF","#0050FF"];
+
+                for(var i=0;i<6;i++){
+                	series[i].color = colors[i];
+                }
+
+                console.log(series);
+
+
+                $.plot("#placeholder", series,
+                {
+                  xaxis: { mode: "time" } ,
+                  yaxes: [ 
+                  {
+                    tickFormatter: function(value, axis) {
+                      return value.toFixed(axis.tickDecimals) + "$";
+                    },
+                    max: 100
+                  },
+                  {
+                  	tickFormatter: function(value, axis) {
+                      return value.toFixed(axis.tickDecimals) + "lbs/MWh";
+                    },
+                  	alignTicksWithAxis: 1,
+                  	position:0,
+                  	min: 300,
+                  	color:"#FFBF00"
+                  } 
+                  ],
+                  legend: { noColumns: 3 }
+                });
+
+                // $(".loading").hide();
+
+              }
+
+
+		var ploturl = "http://141.217.48.221/App/index.php/QueryHistoricalDayaheadLMEmission/query/?cpn=AMIL.GBCCTG1&&iso=MISO&&emissionType=CO2";
+
+		$.ajax({
+                url: ploturl,
+                type: "GET",
+                dataType: "json",
+                success: onDataReceived
+              });
+
+	});
+
+	$("#ttest").click(function(){
+		var colors = ["#FFE100","#FFBF00","#FF9000", "#00E9FF","#00A9FF","#0050FF"];
+
+		console.log(colors[3]);
+	});
+
+	</script>
+
+
+</html>
